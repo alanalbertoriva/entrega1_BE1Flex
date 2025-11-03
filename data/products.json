@@ -1,0 +1,41 @@
+[
+  {
+    "id": 1,
+    "title": "Mesa redonda",
+    "description": "Excelente calidad, patas reforzadas. Medidas 1.50m diametro.",
+    "code": "MJ001",
+    "price": 150000,
+    "status": true,
+    "stock": 20,
+    "category": "Muebles de jardin",
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ]
+  },
+  {
+    "id": 2,
+    "title": "Mesa redonda de plastico",
+    "description": "Excelente calidad, patas reforzadas en aluminio. Medidas 1.10m diametro.",
+    "code": "MJ002",
+    "price": 300000,
+    "status": true,
+    "stock": 10,
+    "category": "Muebles de jardin",
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ]
+  },
+  {
+    "id": 3,
+    "title": "Lampara led",
+    "description": "Lampara led autorecargable. 45W.",
+    "code": "L002",
+    "price": 8000,
+    "status": true,
+    "stock": 300,
+    "category": "Iluminacion",
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ]
+  }
+]
