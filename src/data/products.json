@@ -1,0 +1,67 @@
+[
+  {
+    "id": 2,
+    "title": "Cafetera",
+    "description": "Nespreso importada",
+    "price": 45000,
+    "code": "C555",
+    "stock": 5,
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ],
+    "category": "Electro",
+    "status": true
+  },
+  {
+    "id": 4,
+    "title": "Pava Electrica",
+    "description": "Pava de alta calidad",
+    "price": 25000,
+    "code": "C5556",
+    "stock": 2,
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ],
+    "category": "Electro",
+    "status": true
+  },
+  {
+    "id": 3,
+    "title": "Termo Stanley",
+    "description": "Importado por aliexpress",
+    "price": 45000,
+    "code": "C5556",
+    "stock": 50,
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ],
+    "category": "Hogar",
+    "status": true
+  },
+  {
+    "id": 4,
+    "title": "Notebook Asus",
+    "description": "64GB RAM 2TB DISCO",
+    "price": 400000,
+    "code": "C55566",
+    "stock": 5,
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ],
+    "category": "Electro",
+    "status": true
+  },
+  {
+    "id": 5,
+    "title": "Rack de TV",
+    "description": "Madera paraiso, 1.20X40",
+    "price": 35000,
+    "code": "C11111",
+    "stock": 20,
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ],
+    "category": "Hogar",
+    "status": true
+  }
+]

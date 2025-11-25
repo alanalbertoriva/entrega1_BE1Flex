@@ -1,0 +1,56 @@
+<div class="container my-4">
+    <h1 class="text-center">Lista de productos RealTime</h1>
+    {{#if products.length}}
+        <section class="d-flex gap-3 flex-wrap justify-content-center my-4" id="productsContainar">
+            {{#each products}}
+                <div class="card" style="width: 18rem;" data-id={{this.id}}>
+                    <img src={{this.thumbnails.[0]}} class="card-img-top" alt={{this.title}}>
+                    <div class="card-body">
+                        <h2 class="">{{this.title}}</h2>
+                        <p>Precio: ${{this.price}}</p>
+                        <p class="card-text">{{this.description}}</p>
+                        <button class="btn btn-danger" onclick="deleteProduct({{this.id}})">Eliminar</button>
+                    </div>
+                </div>
+            {{/each}}
+        </section>
+    {{else}}
+        <p>No hay productos disponibles.</p>
+    {{/if}}
+    <section class="containar w-50 mx-auto border p-4 bg-light rounded shadow">
+        <h2 class="text-center">Agregar nuevo producto</h2>
+        <div class="my-4">
+            <div class="mb-3">
+                <label for="name" class="form-label">Nombre</label>
+                <input type="text" class="form-control" id="name" placeholder="Nombre del producto" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripcion</label>
+                <input type="text" class="form-control" id="description" placeholder="Descripcion del producto" name="description" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Precio</label>
+                <input type="number" class="form-control" id="price" placeholder="Precio del producto" name="price" required>
+            </div>
+            <div class="mb-3">
+                <label for="stock" class="form-label">Cantidad</label>
+                <input type="number" class="form-control" id="stock" placeholder="Cantidad del producto" name="stock">
+            </div>
+            <div class="mb-3">
+                <label for="thumbnails" class="form-label">URL de imagen</label>
+                <input type="text" class="form-control" id="thumbnails" placeholder="URL de imagen">
+            </div>
+            <div class="mb-3">
+                <label for="codigo" class="form-label">Código de producto</label>
+                <input type="text" class="form-control" id="codigo" placeholder="Codigo de producto" name="codigo" required>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Categoria producto</label>
+                <input type="text" class="form-control" id="category" placeholder="Categoria del producto" name="category" required>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-success" onclick="addProduct()">Agregar producto</button>
+            </div>
+        </div>
+    </section>
+</div>

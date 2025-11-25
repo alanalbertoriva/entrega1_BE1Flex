@@ -1,109 +1,48 @@
 const express = require('express');
+const handlebars = require('express-handlebars');
 const app = express();
 const path = require("path");
-const ProductManager = require("../managers/ProductManager");
-const CartManager = require("../managers/CartManager");
+const socketIo = require('socket.io');
+const http = require('http');
+
+const server = http.createServer(app); // 3. Crear servidor HTTP
+const io = socketIo(server); // 4. Integrar Socket.io con el servidor HTTP
+app.set('socketio', io);
+
+// Handlebars setup
+app.engine('handlebars', handlebars.engine());
+app.set('view engine', 'handlebars');
+app.set('views', path.join(__dirname, 'views'));
+
+app.get('/', (req, res) => {
+  res.redirect('/api/products');
+});
+
+const viewRouter = require('./routes/viewRouter');
 
 app.use(express.json());
+app.use('/api', viewRouter);
 
 const PORT = 8080;
 
-const filePathProducts = path.join(__dirname, ".." ,"data", "products.json");
-const filePathCarts = path.join(__dirname, "..", "data", "carts.json");
+app.use(express.static(path.join(__dirname, "public")));
 
-const productManager = new ProductManager(filePathProducts);
-const cartManager = new CartManager(filePathCarts);
-
-
-app.get('/api/products/', (req, res) => {
-  productManager.getProducts()
-    .then(products => res.json(products))
-    .catch(err => res.status(500).json({ error: err.message }));
+// 6. Manejar conexiones de Socket.io
+io.on('connection', (socket) => {
+    console.log('Nuevo cliente conectado');
+// Manejar mensajes del cliente
+    socket.on('message', (data) => {
+        console.log(`Mensaje recibido: ${data}`);
+// Enviar el mensaje a todos los clientes conectados (incluido el remitente)
+        io.emit('message', `Servidor recibió: ${data}`);
+    });
+    // Manejar desconexiones
+    socket.on('disconnect', () => {
+        console.log('Cliente desconectado');
+    });
 });
 
-app.get('/api/products/:id', (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  productManager.getProductById(productId)
-    .then(product => {
-      if (product) {
-        res.json(product);
-      } else {
-        res.status(404).json({ error: "Producto no encontrado" });
-      }
-    })
-    .catch(err => res.status(500).json({ error: err.message}));
-});
-
-app.post('/api/products/', (req, res) => {
-  const newProduct = req.body;
-  productManager.addProduct(newProduct)
-    .then(addedProduct => res.status(201).json(addedProduct))
-    .catch(err => res.status(500).json({ error: err.message }));
-});
-
-app.put('/api/products/:id', (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  const updatedFields = req.body;
-  productManager.updateProduct(productId, updatedFields)
-    .then(updatedProduct => {
-      if (updatedProduct) {
-        res.json(updatedProduct);
-      } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
-      }
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
-});
-
-app.delete('/api/products/:id', (req, res) => {
-  const productId = parseInt(req.params.id, 10);
-  productManager.deleteProduct(productId)
-    .then(deleted => {
-      if (deleted) {
-        res.json({ message: 'Producto eliminado correctamente' });
-      } else {
-        res.status(404).json({ error: 'Producto no encontrado' });
-      }
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
-});
-
-app.post('/api/carts/', (req, res) => {
-  const newCart = req.body;
-  cartManager.addCart(newCart)
-    .then(addedCart => res.status(201).json(addedCart))
-    .catch(err => res.status(500).json({ error: err.message }));
-});
-
-app.get('/api/carts/:id', (req, res) => {
-  const cartId = parseInt(req.params.id, 10);
-  cartManager.getCartById(cartId)
-    .then(products => {
-      if (products) {
-        res.json(products);
-      } else {
-        res.status(404).json({ error: 'Carrito no encontrado' });
-      }
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
-});
-
-app.post('/api/carts/:id/product/:pid', (req, res) => {
-  const cartId = parseInt(req.params.id, 10);
-  const productId = parseInt(req.params.pid, 10);
-  const quantity = 1;
-  const productToAdd = { product: productId, quantity: quantity };
-  cartManager.updateCart(cartId, productToAdd)
-    .then(updatedCart => {
-      if (updatedCart) {
-        res.json(updatedCart);
-      } else {
-        res.status(404).json({ error: 'Carrito no encontrado' });
-      }
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+// 7. Iniciar el servidor
+server.listen(PORT, () => {
+  console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
