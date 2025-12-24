@@ -4,13 +4,28 @@ const app = express();
 const path = require("path");
 const socketIo = require('socket.io');
 const http = require('http');
+const mongoose = require('mongoose');
+
+// 1. Conectar a MongoDB
+mongoose.connect('mongodb+srv://alanalbertoriva_db_user:l0yVX829VkEDwppM@cluster0.pimrehu.mongodb.net/entregafinalbe1?retryWrites=true&w=majority')
+.then(() => {
+    console.log('Conectado a MongoDB');
+})
+.catch(err => {
+    console.error('Error al conectar a MongoDB', err);
+});
 
 const server = http.createServer(app); // 3. Crear servidor HTTP
 const io = socketIo(server); // 4. Integrar Socket.io con el servidor HTTP
 app.set('socketio', io);
 
 // Handlebars setup
-app.engine('handlebars', handlebars.engine());
+app.engine('handlebars', handlebars.engine({
+  runtimeOptions: {
+      //* para acceder a datos obj. anidados
+      allowProtoPropertiesByDefault: true,
+    }
+}));
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 

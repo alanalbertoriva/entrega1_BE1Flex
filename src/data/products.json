@@ -63,5 +63,18 @@
     ],
     "category": "Hogar",
     "status": true
+  },
+  {
+    "id": 6,
+    "title": "Mesa triangular",
+    "description": "Excelente calidad, patas reforzadas. Medidas 1.50m diametro.",
+    "code": "MJ001",
+    "price": 150000,
+    "status": true,
+    "stock": 20,
+    "category": "Muebles de jardin",
+    "thumbnails": [
+      "https://placehold.co/600x400"
+    ]
   }
 ]

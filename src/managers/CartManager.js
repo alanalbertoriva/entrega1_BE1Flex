@@ -1,58 +1,108 @@
-const fs = require("fs").promises;
+const Cart = require('../models/cart');
 
 class CartManager {
-    constructor(filePath) {
-        this.filePath = filePath;
+    async getCartById(id) {
+        return await Cart.findById(id).populate('products.product');
     }
 
-    async #readFile() {
+    async addCart(cart) {
+        const newCart = new Cart(cart);
+        await newCart.save();
+        return newCart._id;
+    }
+
+    async updateCart(id, carts) {
+        const cart = await Cart.findById(id);
+        if (!cart) {
+            return null;
+        }
+        cart.products = carts;
+        await cart.save();
+        return cart;
+    }
+
+    async updateCartProduct(cartId, productToAdd) {
         try {
-            const data = await fs.readFile(this.filePath, "utf-8");
-            return JSON.parse(data);
+            const updatedCart = await Cart.findOneAndUpdate(
+                { _id: cartId, 'products.product': productToAdd.product },
+                { $set: { 'products.$.quantity': productToAdd.quantity } },
+                { new: true }
+            );
+            if (updatedCart) {
+                return updatedCart;
+            }
         } catch (error) {
-            if (error.code === "ENOENT") return [];
+            console.error("Error al actualizar el producto en el carrito:", error);
             throw error;
         }
     }
 
-    async #writeFile(carts) {
+    async updateCartProductQuantityOne(cartId, productId) {
         try {
-            await fs.writeFile(this.filePath, JSON.stringify(carts, null, 2));
-        } catch (error) {
-            console.error("Error al escribir el archivo:", error);
-        }
-    }
+            let updatedCart = await Cart.findOneAndUpdate(
+                { _id: cartId, 'products.product': productId },
+                { $inc: { 'products.$.quantity': 1 } },
+                { new: true }
+            );
 
-    async addCart(cart) {
-        const carts = await this.#readFile();
-        const newCart = { id: carts.length + 1, ...cart };
-        carts.push(newCart);
-        await this.#writeFile(carts);
-        return newCart;
-    }
-
-    async getCartById(id) {
-        const carts = await this.#readFile();
-        return carts.find(cart => cart.id === id).products || null;
-    }
-
-    async updateCart(id, updatedFields) {
-        const carts = await this.#readFile();
-        const index = carts.findIndex(cart => cart.id === id);
-        let found = false;
-
-        if (index === -1) return null;
-        carts[index].products.forEach(product => {
-            if(product.product === updatedFields.product){
-                product.quantity += updatedFields.quantity;
-                found = true;
+            if (!updatedCart) {
+                updatedCart = await Cart.findOneAndUpdate(
+                                        { _id: cartId },
+                                        {
+                                        $push: {
+                                            products: {
+                                            product: productId,
+                                            quantity: 1
+                                            }
+                                        }
+                                        },
+                                        { new: true }
+                );
             }
-        });
-        if(!found){
-            carts[index].products.push(updatedFields);
+
+            if (updatedCart) {
+                return updatedCart;
+            }
+        } catch (error) {
+            console.error("Error al actualizar el producto en el carrito:", error);
+            throw error;
         }
-        await this.#writeFile(carts);
-        return carts[index];
+    }
+
+    async deleteCartProduct(cartId, productId) {
+        try {
+            const deletedCart = await Cart.findOneAndUpdate(
+                                        { _id: cartId, 'products.product': productId },
+                                        { 
+                                            $pull: { 
+                                                products: { product: productId } 
+                                            } 
+                                        },
+                                        { new: true }
+            );
+            if (deletedCart) {
+                return deletedCart;
+            }
+        } catch (error) {
+            console.error("Error al eliminar el producto en el carrito:", error);
+            throw error;
+        }
+    }
+
+    async deleteProductsByCart(cartId) {
+        try {
+            const deletedCart = await Cart.findById(cartId);
+            if (!deletedCart) {
+                return null;
+            }
+            deletedCart.products = [];
+            await deletedCart.save();
+            return deletedCart;
+        }
+        catch (error) {
+            console.error("Error al eliminar los productos del carrito:", error);
+            throw error;
+        }
     }
 
 }

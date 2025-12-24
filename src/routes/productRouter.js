@@ -1,17 +1,40 @@
 const express = require('express');
 const router = express.Router();
 
-const path = require("path");
 const ProductManager = require("../managers/ProductManager");
 
-const filePathProducts = path.join(__dirname, ".." ,"data", "products.json");
-
-const productManager = new ProductManager(filePathProducts);
+const productManager = new ProductManager();
 
 router.get('/', (req, res) => {
-  productManager.getProducts()
-    .then(products => res.render('layouts/home', { products }))
-    .catch(err => res.status(500).json({ error: err.message }));
+  const {limit, page, sort, category, status} = req.query;
+  const query = {
+    ...(category && { category: { $regex: category, $options: 'i' } }),
+    ...(status && { status: status === 'true' })
+  };
+  const options = {
+    page: parseInt(page) || 1,
+    limit: parseInt(limit) || 10,
+    sort: { price: sort === 'desc' ? -1 : 1 }
+  };
+  productManager.getProducts(query, options)
+    .then(results => {
+      let queryStr = category ? `&category=${category}` : '';
+      queryStr += status ? `&status=${status}` : '';
+      const prevLink = results.hasPrevPage ? `/api/products?limit=${options.limit}&page=${results.prevPage}${queryStr}` : null;
+      const nextLink = results.hasNextPage ? `/api/products?limit=${options.limit}&page=${results.nextPage}${queryStr}` : null;
+
+      res.render('layouts/home', {  status: 'success',
+                                    payload: results.docs,
+                                    totalPages: results.totalPages,
+                                    prevPage: results.prevPage,
+                                    nextPage: results.nextPage,
+                                    page: results.page,
+                                    hasPrevPage: results.hasPrevPage,
+                                    hasNextPage: results.hasNextPage,
+                                    prevLink: prevLink,
+                                    nextLink: nextLink});
+    })
+    .catch(err => res.status(500).json({ status: 'error', error: err.message }));
 });
 
 router.get('/:id', (req, res) => {

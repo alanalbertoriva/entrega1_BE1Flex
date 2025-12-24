@@ -1,0 +1,24 @@
+<div class="container my-4">
+    <h1 class="text-center">Lista de productos del carrito</h1>
+    {{#if products.length}}
+        <section class="d-flex gap-3 flex-wrap justify-content-center my-4" id="productsContainar">
+            {{#each products}}
+                <div class="card" style="width: 18rem;" data-id="{{this._id}}">
+                    <img src={{this.thumbnails.[0]}} class="card-img-top" alt={{this.title}}>
+                    <div class="card-body">
+                        <h2 class="">{{this.title}}</h2>
+                        <p>Precio: ${{this.price}}</p>
+                        <p class="card-text">{{this.description}}</p>
+                        <p>Cantidad: {{this.quantity}}</p>
+                        <button class="btn btn-danger" onclick="removeFromCart('{{this._id}}')">Eliminar del carrito</button>
+                    </div>
+                </div>
+            {{/each}}
+        </section>
+        <section class="text-center">
+            <button class="btn btn-danger p-4" onclick="checkoutCart()" id="btn-vaciar">Vaciar carrito</button>
+        </section>
+    {{else}}
+        <p>No hay productos disponibles.</p>
+    {{/if}}
+</div>
